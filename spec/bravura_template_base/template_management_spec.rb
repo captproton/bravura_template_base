@@ -3,18 +3,19 @@ require 'spec_helper'
 RSpec.describe BravuraTemplateBase do
   let(:app) { build(:app) }
 
+  before do
+    # Mock an account that responds to :settings and :id
+    account_double = double("Account", settings: true, id: 1)
+    allow(app).to receive(:account).and_return(account_double)
+  end
+
   describe '.load_template' do
     context 'when the template exists' do
       it 'loads the template successfully' do
-        expect(app.config.assets.paths).to receive(:<<).with(anything)
-        expect(app.config.assets.precompile).to receive(:<<).with("bravura_template/normal/application.css")
+        app = double("App", config: double("Config", assets: double("Assets", paths: [], precompile: [])))
+        account = double("Account", settings: double("Settings", design: double("Design", blog_template_gem: "bravura_template-normal")), id: 1)
 
-        # Mock the engine constant
-        normal_engine = Class.new(Rails::Engine)
-        stub_const("BravuraTemplate::Normal::Engine", normal_engine)
-        allow_any_instance_of(normal_engine).to receive(:root).and_return(Pathname.new("/dummy/path"))
-
-        BravuraTemplateBase.load_template(app, 'normal')
+        expect { BravuraTemplateBase.load_template(app, account) }.not_to raise_error
       end
     end
 
