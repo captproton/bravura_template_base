@@ -14,6 +14,9 @@ require 'bravura_template_base'
 
 ENV['RAILS_ENV'] = 'test'
 
+# Load stub classes
+require_relative 'support/stub_classes'
+
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
 
@@ -27,21 +30,18 @@ RSpec.configure do |config|
 
   config.shared_context_metadata_behavior = :apply_to_host_groups
 
-  # Allow expectations on nil
   RSpec::Mocks.configuration.allow_message_expectations_on_nil = true
 
-  # Print the 10 slowest examples and example groups at the end of the spec run
   config.profile_examples = 10
-
-  # Run specs in random order to surface order dependencies
   config.order = :random
-
-  # Seed global randomization in this process using the `--seed` CLI option
   Kernel.srand config.seed
+
+  # Clear and reload factories before the test suite runs
+  config.before(:suite) do
+    FactoryBot.factories.clear
+    FactoryBot.find_definitions
+  end
 end
 
 # Load factory definitions
-require_relative 'factories/apps'
-
-# Ensure FactoryBot is properly set up
-# FactoryBot.find_definitions
+Dir[File.expand_path('factories/**/*.rb', __dir__)].each { |f| require f }
