@@ -1,42 +1,40 @@
 require 'spec_helper'
 
 RSpec.describe BravuraTemplateBase do
-  let(:app) { build(:app) }
-
-  before do
-    # Mock an account that responds to :settings and :id
-    account_double = double("Account", settings: true, id: 1)
-    allow(app).to receive(:account).and_return(account_double)
-  end
+  let(:app) { OpenStruct.new(config: OpenStruct.new(assets: OpenStruct.new(paths: [], precompile: []))) }
 
   describe '.load_template' do
     context 'when the template exists' do
-      it 'loads the template successfully' do
-        app = double("App", config: double("Config", assets: double("Assets", paths: [], precompile: [])))
-        account = double("Account", settings: double("Settings", design: double("Design", blog_template_gem: "bravura_template-normal")), id: 1)
+      let(:account) { build(:account, :with_normal_template) }
 
-        expect { BravuraTemplateBase.load_template(app, account) }.not_to raise_error
+      it 'loads the template successfully' do
+        expect(app.config.assets.paths).to receive(:<<).with(anything)
+        expect(app.config.assets.precompile).to receive(:<<).with("bravura_template_normal/application.css")
+
+        normal_engine = Class.new(Rails::Engine)
+        stub_const("BravuraTemplateNormal::Engine", normal_engine)
+        allow_any_instance_of(normal_engine).to receive(:root).and_return(Pathname.new("/dummy/path"))
+
+        BravuraTemplateBase.load_template(app, account)
       end
     end
 
     context 'when the template does not exist' do
-      it 'falls back to the default template' do
-        non_existent_template = 'non_existent'
+      let(:account) { build(:account, :with_non_existent_template) }
 
+      it 'falls back to the default template' do
         allow(BravuraTemplateBase).to receive(:load_template).and_call_original
         allow(BravuraTemplateBase).to receive(:logger).and_return(Logger.new(nil))
-        expect(BravuraTemplateBase.logger).to receive(:warn).with("Template #{non_existent_template} not found, falling back to default")
+        expect(BravuraTemplateBase.logger).to receive(:warn).with(/Template non_existent_template not found for account \d+, falling back to default/)
 
-        # Mock the default template engine
-        default_engine = Class.new(Rails::Engine)
-        stub_const("BravuraTemplate::Normal::Engine", default_engine)
-        allow_any_instance_of(default_engine).to receive(:root).and_return(Pathname.new("/dummy/path"))
+        normal_engine = Class.new(Rails::Engine)
+        stub_const("BravuraTemplateNormal::Engine", normal_engine)
+        allow_any_instance_of(normal_engine).to receive(:root).and_return(Pathname.new("/dummy/path"))
 
-        # Expect the default template to be loaded
         expect(app.config.assets.paths).to receive(:<<).with(anything)
-        expect(app.config.assets.precompile).to receive(:<<).with("bravura_template/normal/application.css")
+        expect(app.config.assets.precompile).to receive(:<<).with("bravura_template_normal/application.css")
 
-        BravuraTemplateBase.load_template(app, non_existent_template)
+        BravuraTemplateBase.load_template(app, account)
       end
     end
   end
