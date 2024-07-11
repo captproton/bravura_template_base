@@ -1,11 +1,26 @@
+require "bravura_template_base/version"
+require "bravura_template_base/engine"
+
 module BravuraTemplateBase
-  AVAILABLE_TEMPLATES = [ "bravura_template_normal", "bravura_template_product_updates" ]
+  mattr_accessor :available_templates
+  self.available_templates = [ "bravura_template_normal" ]
+
   DEFAULT_TEMPLATE = "bravura_template_normal"
 
-  def self.load_template(app, account)
-    raise ArgumentError, "account must respond to :settings and :id" unless account.respond_to?(:settings) && account.respond_to?(:id)
+  def self.register_template(template_name)
+    available_templates << template_name unless available_templates.include?(template_name)
+  end
 
-    template_name = account.settings.design.blog_template_gem
+  def self.template_options
+    available_templates.map do |template|
+      [ template.humanize.titleize, template ]
+    end
+  end
+
+  def self.load_template(app, account)
+    raise ArgumentError, "account must respond to :settings_design and :id" unless account.respond_to?(:settings_design) && account.respond_to?(:id)
+
+    template_name = account.settings_design.blog_template_gem
 
     begin
       engine_class = "#{template_name.camelize}::Engine".constantize
@@ -14,7 +29,7 @@ module BravuraTemplateBase
     rescue NameError => e
       logger.warn "Template #{template_name} not found for account #{account.id}, falling back to default"
       if template_name != DEFAULT_TEMPLATE
-        account.settings.design.blog_template_gem = DEFAULT_TEMPLATE
+        account.settings_design.blog_template_gem = DEFAULT_TEMPLATE
         load_template(app, account)
       else
         raise "Default template #{DEFAULT_TEMPLATE} not found: #{e.message}"

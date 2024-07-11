@@ -4,18 +4,23 @@ FactoryBot.define do
 
     trait :with_normal_template do
       after(:build) do |account|
-        account.settings.design.blog_template_gem = 'bravura_template_normal'
+        # Ensure settings_design is initialized before setting blog_template_gem
+        account.settings_design ||= OpenStruct.new
+        account.settings_design.blog_template_gem = 'bravura_template_normal'
       end
     end
 
     trait :with_non_existent_template do
       after(:build) do |account|
-        account.settings.design.blog_template_gem = 'non_existent_template'
+        # Ensure settings_design is initialized before setting blog_template_gem
+        account.settings_design ||= OpenStruct.new
+        account.settings_design.blog_template_gem = 'non_existent_template'
       end
     end
 
     after(:build) do |account|
-      account.settings ||= OpenStruct.new(design: OpenStruct.new(blog_template_gem: 'bravura_template_normal'))
+      # If settings_design should be the default, adjust this block accordingly
+      account.settings_design ||= OpenStruct.new(blog_template_gem: 'bravura_template_normal')
     end
   end
 end
