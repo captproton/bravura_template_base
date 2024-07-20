@@ -1,7 +1,9 @@
 require "bravura_template_base/version"
 require "bravura_template_base/engine"
+require "bravura_template_base/settings_integration"
 
 module BravuraTemplateBase
+  class Error < StandardError; end
   mattr_accessor :available_templates
   self.available_templates = [ "bravura_template_normal" ]
 
