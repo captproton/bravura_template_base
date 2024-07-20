@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "rails", ">= 7.1.3.4"
 
-  spec.add_development_dependency "rspec-rails"
-  spec.add_development_dependency "factory_bot_rails"
-  spec.add_development_dependency "faker"
+  spec.add_development_dependency "rspec-rails", '~> 6.1', '>= 6.1.3'
+  spec.add_development_dependency "factory_bot_rails", '~> 6.4', '>= 6.4.3'
+  spec.add_development_dependency "faker", '~> 3.4', '>= 3.4.1'
 end
