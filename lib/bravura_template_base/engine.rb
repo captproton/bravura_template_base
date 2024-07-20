@@ -46,5 +46,11 @@ module BravuraTemplateBase
         end
       end
     end
+
+    initializer "bravura_template_base.settings_integration" do |app|
+      ActiveSupport.on_load(:action_controller) do
+        include BravuraTemplateBase::SettingsIntegration
+      end
+    end
   end
 end
