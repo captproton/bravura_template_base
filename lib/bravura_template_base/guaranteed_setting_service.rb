@@ -1,7 +1,7 @@
 module BravuraTemplateBase
   class GuaranteedSettingService
     def self.for_account(account)
-      new(SettingsService.for_account(account))
+      new(::SettingsService.for_account(account))
     end
 
     def initialize(settings_service)
@@ -91,7 +91,8 @@ module BravuraTemplateBase
       end
 
       def method_missing(method_name, *args)
-        DEFAULTS.dig(@key, method_name.to_sym) || nil
+        value = DEFAULTS.dig(@key, method_name.to_sym)
+        value.nil? ? nil : value
       end
 
       def respond_to_missing?(method_name, include_private = false)
