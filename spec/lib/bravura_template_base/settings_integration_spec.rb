@@ -91,11 +91,21 @@ module BravuraTemplateBase
     end
 
     describe '#invalidate_settings_cache' do
-      it 'clears the cache and resets all_settings' do
-        expect(mock_cache).to receive(:delete).with("account_settings_1")
-        expect(settings_service).to receive(:clear_cache_for_account).with(current_account)
-
+      before do
         instance.instance_variable_set(:@all_settings, {})
+      end
+
+      it 'clears the cache' do
+        expect(mock_cache).to receive(:delete).with("account_settings_1")
+        instance.invalidate_settings_cache
+      end
+
+      it 'calls clear_cache_for_account on SettingsService' do
+        expect(settings_service).to receive(:clear_cache_for_account).with(current_account)
+        instance.invalidate_settings_cache
+      end
+
+      it 'resets all_settings to nil' do
         instance.invalidate_settings_cache
         expect(instance.instance_variable_get(:@all_settings)).to be_nil
       end
