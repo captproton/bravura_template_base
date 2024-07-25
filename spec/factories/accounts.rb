@@ -10,6 +10,13 @@ FactoryBot.define do
       end
     end
 
+    trait :with_prime_template do
+      after(:build) do |account|
+        account.settings_design ||= OpenStruct.new
+        account.settings_design.blog_template_gem = 'bravura_template_prime'
+      end
+    end
+
     trait :with_non_existent_template do
       after(:build) do |account|
         # Ensure settings_design is initialized before setting blog_template_gem
@@ -20,7 +27,7 @@ FactoryBot.define do
 
     after(:build) do |account|
       # If settings_design should be the default, adjust this block accordingly
-      account.settings_design ||= OpenStruct.new(blog_template_gem: 'bravura_template_normal')
+      account.settings_design ||= OpenStruct.new(blog_template_gem: 'bravura_template_prime')
     end
   end
 end

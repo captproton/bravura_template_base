@@ -1,22 +1,22 @@
 require 'bundler/setup'
 Bundler.setup
 
-require 'rails'
-require 'active_support/all'
-require 'action_controller'
-require 'action_view'
+# Set up Rails environment
+ENV['RAILS_ENV'] = 'test'
+require File.expand_path('../spec/dummy/config/environment', __dir__)
+
 require 'rspec/rails'
 require 'factory_bot_rails'
 require 'faker'
 require 'ostruct'
 
+# Require the engine
 require 'bravura_template_base'
-
-ENV['RAILS_ENV'] = 'test'
 
 # Load stub classes
 require_relative 'support/stub_classes'
 
+# Configure RSpec
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
 
@@ -38,7 +38,6 @@ RSpec.configure do |config|
 
   # Clear and reload factories before the test suite runs
   config.before(:suite) do
-    FactoryBot.factories.clear
     FactoryBot.find_definitions
   end
 end
