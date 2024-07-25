@@ -56,7 +56,7 @@ module BravuraTemplateBase
           button_style_id: 1,
           navigation_bar_id: 1,
           font_family: "Arial, sans-serif",
-          blog_template_gem: "bravura_template_normal",
+          blog_template_gem: "bravura_template_prime",
           heading_font: "DEFAULT",
           content_font: "DEFAULT"
         },
