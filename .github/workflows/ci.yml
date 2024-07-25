@@ -15,10 +15,14 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ruby-3.2.2
+          ruby-version: 3.2.2
           bundler-cache: true
+
+      - name: Unfreeze bundle
+        run: bundle config --local frozen false
+
+      - name: Install dependencies
+        run: bundle install
 
       - name: Lint code for consistent style
         run: bin/rubocop -f github
-
-
