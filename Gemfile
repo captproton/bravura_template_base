@@ -14,13 +14,13 @@ gem "rubocop-rails-omakase", require: false
 # gem "debug", ">= 1.0.0"
 
 group :development, :test do
-  gem 'rspec-rails', '~> 6.1', '>= 6.1.3'
-  gem 'factory_bot_rails', '~> 6.4', '>= 6.4.3'
-  gem 'faker',' ~> 3.4', '>= 3.4.1'
-  gem 'pry-byebug'
+  gem "rspec-rails", "~> 6.1", ">= 6.1.3"
+  gem "factory_bot_rails", "~> 6.4", ">= 6.4.3"
+  gem "faker", " ~> 3.4", ">= 3.4.1"
+  gem "pry-byebug"
 
-  gem 'rubocop', require: false
-  gem 'rubocop-rspec', require: false
+  gem "rubocop", require: false
+  gem "rubocop-rspec", require: false
 end
 
 # Add any additional gems your engine needs here
@@ -30,11 +30,11 @@ end
 # gem 'paper_trail'
 
 # Gems for asset pipeline
-gem 'sass-rails'
-gem 'uglifier'
+gem "sass-rails"
+gem "uglifier"
 
 # Gems for JSON API
-gem 'jbuilder'
+gem "jbuilder"
 
 # Gems for background jobs
 # gem 'sidekiq'
