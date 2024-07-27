@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    bravura_template_base (0.1.2)
+    bravura_template_base (0.1.4)
       rails (>= 7.1.3.4)
 
 GEM
