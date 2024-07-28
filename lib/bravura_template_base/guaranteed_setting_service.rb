@@ -1,16 +1,32 @@
+# lib/bravura_template_base/guaranteed_setting_service.rb
 module BravuraTemplateBase
   class GuaranteedSettingService
     def self.for_account(account)
-      new(::SettingsService.for_account(account))
+      SettingsService.for_account(account) || DefaultSettings.new
     end
 
-    def initialize(settings_service)
-      @settings_service = settings_service
-    end
+    class DefaultSettings
+      def get(key)
+        category, setting = key.to_s.split(".")
+        DefaultSetting.new(category.to_sym).send(setting)
+      end
 
-    def get(key)
-      value = @settings_service.get(key)
-      value.nil? ? DefaultSetting.new(key) : value
+      # Implement methods to match SettingsService interface
+      SETTING_MODELS = [
+        :feature,
+        :general,
+        :cta_button_setup,
+        :design,
+        :email_newsletter_setup,
+        :footer,
+        :navigation
+      ]
+
+      SETTING_MODELS.each do |model|
+        define_method(model) do
+          DefaultSetting.new(model)
+        end
+      end
     end
 
     class DefaultSetting
@@ -91,12 +107,11 @@ module BravuraTemplateBase
       end
 
       def method_missing(method_name, *args)
-        value = DEFAULTS.dig(@key, method_name.to_sym)
-        value.nil? ? nil : value
+        DEFAULTS[@key][method_name.to_sym] || super
       end
 
       def respond_to_missing?(method_name, include_private = false)
-        DEFAULTS[@key]&.key?(method_name.to_sym) || super
+        DEFAULTS[@key].key?(method_name.to_sym) || super
       end
     end
   end
