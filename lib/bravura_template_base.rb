@@ -3,7 +3,8 @@ require "bravura_template_base/version"
 require "bravura_template_base/engine"
 require "bravura_template_base/null_settings"
 require "bravura_template_base/settings_integration"
-
+require "bravura_template_base/template_renderer"
+require "bravura_template_base/guaranteed_setting_service"
 module BravuraTemplateBase
   class Error < StandardError; end
 
