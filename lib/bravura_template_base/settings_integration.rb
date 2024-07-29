@@ -2,6 +2,7 @@
 # lib/bravura_template_base/settings_integration.rb
 require "active_support/concern"
 require "bravura_template_base/null_settings"
+require "bravura_template_base/guaranteed_setting_service"
 require "ostruct"
 
 module BravuraTemplateBase
@@ -38,19 +39,18 @@ module BravuraTemplateBase
 
     def fetch_settings
       cached_settings = self.class.cache_store.fetch("account_settings_#{current_account.id}", expires_in: 1.hour) do
-        guaranteed_settings = GuaranteedSettingService.for_account(current_account)
+        guaranteed_settings = BravuraTemplateBase::GuaranteedSettingService.for_account(current_account)
         {
-          feature: guaranteed_settings.get(:feature),
-          general: guaranteed_settings.get(:general),
-          cta_button_setup: guaranteed_settings.get(:cta_button_setup),
-          design: guaranteed_settings.get(:design),
-          email_newsletter_setup: guaranteed_settings.get(:email_newsletter_setup),
-          footer: guaranteed_settings.get(:footer),
-          navigation: guaranteed_settings.get(:navigation)
+          feature: OpenStruct.new(guaranteed_settings.get(:feature)),
+          general: OpenStruct.new(guaranteed_settings.get(:general)),
+          cta_button_setup: OpenStruct.new(guaranteed_settings.get(:cta_button_setup)),
+          design: OpenStruct.new(guaranteed_settings.get(:design)),
+          email_newsletter_setup: OpenStruct.new(guaranteed_settings.get(:email_newsletter_setup)),
+          footer: OpenStruct.new(guaranteed_settings.get(:footer)),
+          navigation: OpenStruct.new(guaranteed_settings.get(:navigation))
         }
       end
-
-      cached_settings.transform_values { |v| v.is_a?(Hash) ? OpenStruct.new(v) : v }
+      OpenStruct.new(cached_settings)
     end
   end
 end

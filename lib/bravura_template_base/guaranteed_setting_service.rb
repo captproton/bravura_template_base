@@ -1,16 +1,48 @@
+# lib/bravura_template_base/guaranteed_setting_service.rb
 module BravuraTemplateBase
   class GuaranteedSettingService
     def self.for_account(account)
-      new(::SettingsService.for_account(account))
+      new(SettingsService.for_account(account))
     end
 
-    def initialize(settings_service)
-      @settings_service = settings_service
+    def initialize(settings)
+      @settings = settings
     end
 
     def get(key)
-      value = @settings_service.get(key)
-      value.nil? ? DefaultSetting.new(key) : value
+      category, setting = key.to_s.split(".")
+      value = @settings[category.to_sym]&.send(setting)
+      value.nil? ? default_value(category, setting) : value
+    end
+
+    private
+
+    def default_value(category, setting)
+      DefaultSetting.new(category.to_sym).send(setting)
+    end
+
+    class DefaultSettings
+      def get(key)
+        category, setting = key.to_s.split(".")
+        DefaultSetting.new(category.to_sym).send(setting)
+      end
+
+      # Implement methods to match SettingsService interface
+      SETTING_MODELS = [
+        :feature,
+        :general,
+        :cta_button_setup,
+        :design,
+        :email_newsletter_setup,
+        :footer,
+        :navigation
+      ]
+
+      SETTING_MODELS.each do |model|
+        define_method(model) do
+          DefaultSetting.new(model)
+        end
+      end
     end
 
     class DefaultSetting
@@ -40,7 +72,17 @@ module BravuraTemplateBase
           open_graph_locale: "en_US",
           publication_name: "Default Publication",
           tab_title: "Default Tab Title",
-          meta_title: "Default Meta Title"
+          meta_title: "Default Meta Title",
+          facebook_url: "http://facebook.com/",
+          x_url: "http://x.com/",
+          instagram_url: "http://instagram.com/",
+          linkedin_url: "http://linkedin.com/",
+          pinterest_url: "http://pinterest.com/",
+          tiktok_url: "http://tiktok.com/",
+          telegram_url: "http://telegram.org/",
+          mastodon_url: "http://mastodon.social/",
+          youtube_url: "http://youtube.com/",
+          keywords: "default, keywords"
         },
         cta_button_setup: {
           show_cta_button: true,
@@ -86,17 +128,21 @@ module BravuraTemplateBase
         }
       }.freeze
 
-      def initialize(key)
-        @key = key
+      def initialize(category)
+        @category = category
       end
 
       def method_missing(method_name, *args)
-        value = DEFAULTS.dig(@key, method_name.to_sym)
-        value.nil? ? nil : value
+        if DEFAULTS[@category]&.key?(method_name)
+          DEFAULTS[@category][method_name]
+        else
+          super
+        end
       end
 
+
       def respond_to_missing?(method_name, include_private = false)
-        DEFAULTS[@key]&.key?(method_name.to_sym) || super
+        DEFAULTS[@category]&.key?(method_name) || super
       end
     end
   end
