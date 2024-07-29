@@ -133,11 +133,16 @@ module BravuraTemplateBase
       end
 
       def method_missing(method_name, *args)
-        DEFAULTS[@category][method_name.to_sym] || super
+        if DEFAULTS[@category]&.key?(method_name)
+          DEFAULTS[@category][method_name]
+        else
+          super
+        end
       end
 
+
       def respond_to_missing?(method_name, include_private = false)
-        DEFAULTS[@category].key?(method_name.to_sym) || super
+        DEFAULTS[@category]&.key?(method_name) || super
       end
     end
   end
