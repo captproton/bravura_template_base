@@ -2,7 +2,23 @@
 module BravuraTemplateBase
   class GuaranteedSettingService
     def self.for_account(account)
-      SettingsService.for_account(account) || DefaultSettings.new
+      new(SettingsService.for_account(account))
+    end
+
+    def initialize(settings)
+      @settings = settings
+    end
+
+    def get(key)
+      category, setting = key.to_s.split(".")
+      value = @settings[category.to_sym]&.send(setting)
+      value.nil? ? default_value(category, setting) : value
+    end
+
+    private
+
+    def default_value(category, setting)
+      DefaultSetting.new(category.to_sym).send(setting)
     end
 
     class DefaultSettings
@@ -56,7 +72,17 @@ module BravuraTemplateBase
           open_graph_locale: "en_US",
           publication_name: "Default Publication",
           tab_title: "Default Tab Title",
-          meta_title: "Default Meta Title"
+          meta_title: "Default Meta Title",
+          facebook_url: "http://facebook.com/",
+          x_url: "http://x.com/",
+          instagram_url: "http://instagram.com/",
+          linkedin_url: "http://linkedin.com/",
+          pinterest_url: "http://pinterest.com/",
+          tiktok_url: "http://tiktok.com/",
+          telegram_url: "http://telegram.org/",
+          mastodon_url: "http://mastodon.social/",
+          youtube_url: "http://youtube.com/",
+          keywords: "default, keywords"
         },
         cta_button_setup: {
           show_cta_button: true,
@@ -102,16 +128,16 @@ module BravuraTemplateBase
         }
       }.freeze
 
-      def initialize(key)
-        @key = key
+      def initialize(category)
+        @category = category
       end
 
       def method_missing(method_name, *args)
-        DEFAULTS[@key][method_name.to_sym] || super
+        DEFAULTS[@category][method_name.to_sym] || super
       end
 
       def respond_to_missing?(method_name, include_private = false)
-        DEFAULTS[@key].key?(method_name.to_sym) || super
+        DEFAULTS[@category].key?(method_name.to_sym) || super
       end
     end
   end
