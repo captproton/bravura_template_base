@@ -1,9 +1,7 @@
-# bravura_template_base/lib/bravura_template_base/settings_integration.rb
 # lib/bravura_template_base/settings_integration.rb
 require "active_support/concern"
 require "bravura_template_base/null_settings"
 require "bravura_template_base/guaranteed_setting_service"
-require "ostruct"
 
 module BravuraTemplateBase
   module SettingsIntegration
@@ -19,7 +17,7 @@ module BravuraTemplateBase
       @all_settings ||= fetch_settings
     end
 
-    def get_setting(key)
+    def get_setting(*key)
       keys = key.to_s.split(".")
       result = keys.inject(all_settings) do |settings, key|
         value = settings.respond_to?(:[]) ? settings[key.to_sym] : settings.send(key.to_sym)
@@ -38,19 +36,18 @@ module BravuraTemplateBase
     private
 
     def fetch_settings
-      cached_settings = self.class.cache_store.fetch("account_settings_#{current_account.id}", expires_in: 1.hour) do
-        guaranteed_settings = BravuraTemplateBase::GuaranteedSettingService.for_account(current_account)
+      self.class.cache_store.fetch("account_settings_#{current_account.id}", expires_in: 1.hour) do
+        settings_service = BravuraTemplateBase::GuaranteedSettingService.for_account(current_account)
         {
-          feature: OpenStruct.new(guaranteed_settings.get(:feature)),
-          general: OpenStruct.new(guaranteed_settings.get(:general)),
-          cta_button_setup: OpenStruct.new(guaranteed_settings.get(:cta_button_setup)),
-          design: OpenStruct.new(guaranteed_settings.get(:design)),
-          email_newsletter_setup: OpenStruct.new(guaranteed_settings.get(:email_newsletter_setup)),
-          footer: OpenStruct.new(guaranteed_settings.get(:footer)),
-          navigation: OpenStruct.new(guaranteed_settings.get(:navigation))
+          feature: settings_service.get(:feature),
+          general: settings_service.get(:general),
+          cta_button_setup: settings_service.get(:cta_button_setup),
+          design: settings_service.get(:design),
+          email_newsletter_setup: settings_service.get(:email_newsletter_setup),
+          footer: settings_service.get(:footer),
+          navigation: settings_service.get(:navigation)
         }
       end
-      OpenStruct.new(cached_settings)
     end
   end
 end
