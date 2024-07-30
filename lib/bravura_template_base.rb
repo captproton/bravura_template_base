@@ -1,4 +1,3 @@
-# lib/bravura_template_base.rb
 require "bravura_template_base/version"
 require "bravura_template_base/engine"
 require "bravura_template_base/null_settings"
@@ -13,12 +12,14 @@ module BravuraTemplateBase
 
   DEFAULT_TEMPLATE = "bravura_template_prime"
 
+  mattr_accessor :set_locale_module
+
   module TemplateRenderer
     extend ActiveSupport::Concern
     include BravuraTemplateBase::SettingsIntegration
-    include SetLocale
 
     included do
+      include BravuraTemplateBase.set_locale_module if BravuraTemplateBase.set_locale_module
       layout :determine_layout
       before_action :prepend_template_view_path
     end
