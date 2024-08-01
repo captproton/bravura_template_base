@@ -91,11 +91,12 @@ module BravuraTemplateBase
       end
 
       it 'returns default value for completely non-existent settings' do
-        default_setting = instance_double("BravuraTemplateBase::GuaranteedSettingService::DefaultSetting")
-        allow(BravuraTemplateBase::GuaranteedSettingService::DefaultSetting).to receive(:new).with(:non_existent).and_return(default_setting)
-        allow(default_setting).to receive(:method_missing).with(:setting).and_return(nil)
+        default_value = "default_value"
+        guaranteed_setting_service = instance_double("BravuraTemplateBase::GuaranteedSettingService")
+        allow(BravuraTemplateBase::GuaranteedSettingService).to receive(:new).and_return(guaranteed_setting_service)
+        allow(guaranteed_setting_service).to receive(:get).with('non_existent.setting').and_return(default_value)
 
-        expect(instance.get_setting('non_existent.setting')).to be_nil
+        expect(instance.get_setting('non_existent.setting')).to eq(default_value)
       end
     end
 
