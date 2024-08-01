@@ -23,8 +23,9 @@ module BravuraTemplateBase
         break nil if settings.nil?
         settings.is_a?(OpenStruct) ? settings[key.to_sym] : settings[key.to_sym]
       end
-      result.nil? ? GuaranteedSettingService::DefaultSetting.new(keys.first.to_sym).send(keys.last) : result
+      result.nil? ? guaranteed_setting_service.get(key) : result
     end
+
     def invalidate_settings_cache
       self.class.cache_store.delete("account_settings_#{current_account.id}")
       ::SettingsService.clear_cache_for_account(current_account) if defined?(::SettingsService)
@@ -47,6 +48,10 @@ module BravuraTemplateBase
         }
       end
       cached_settings.transform_values { |v| v.is_a?(Hash) ? OpenStruct.new(v) : v }
+    end
+
+    def guaranteed_setting_service
+      @guaranteed_setting_service ||= BravuraTemplateBase::GuaranteedSettingService.new(nil, BravuraTemplateBase::DefaultSettingsRepository.new)
     end
   end
 end
