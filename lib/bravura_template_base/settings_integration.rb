@@ -17,26 +17,24 @@ module BravuraTemplateBase
       @all_settings ||= fetch_settings
     end
 
-    def get_setting(*key)
+    def get_setting(key)
       keys = key.to_s.split(".")
       result = keys.inject(all_settings) do |settings, key|
-        value = settings.respond_to?(:[]) ? settings[key.to_sym] : settings.send(key.to_sym)
-        break GuaranteedSettingService::DefaultSetting.new(keys.first.to_sym) if value.nil?
-        value
+        break nil if settings.nil?
+        settings.is_a?(OpenStruct) ? settings[key.to_sym] : settings[key.to_sym]
       end
-      result.is_a?(GuaranteedSettingService::DefaultSetting) ? result.send(keys.last) : result
+      result.nil? ? GuaranteedSettingService::DefaultSetting.new(keys.first.to_sym).send(keys.last) : result
     end
-
     def invalidate_settings_cache
       self.class.cache_store.delete("account_settings_#{current_account.id}")
-      SettingsService.clear_cache_for_account(current_account)
+      ::SettingsService.clear_cache_for_account(current_account) if defined?(::SettingsService)
       @all_settings = nil
     end
 
     private
 
     def fetch_settings
-      self.class.cache_store.fetch("account_settings_#{current_account.id}", expires_in: 1.hour) do
+      cached_settings = self.class.cache_store.fetch("account_settings_#{current_account.id}", expires_in: 1.hour) do
         settings_service = BravuraTemplateBase::GuaranteedSettingService.for_account(current_account)
         {
           feature: settings_service.get(:feature),
@@ -48,6 +46,7 @@ module BravuraTemplateBase
           navigation: settings_service.get(:navigation)
         }
       end
+      cached_settings.transform_values { |v| v.is_a?(Hash) ? OpenStruct.new(v) : v }
     end
   end
 end
