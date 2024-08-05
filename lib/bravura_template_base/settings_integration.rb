@@ -1,6 +1,5 @@
 # lib/bravura_template_base/settings_integration.rb
 require "active_support/concern"
-require "bravura_template_base/null_settings"
 require "bravura_template_base/guaranteed_setting_service"
 
 module BravuraTemplateBase
@@ -18,40 +17,37 @@ module BravuraTemplateBase
     end
 
     def get_setting(key)
-      keys = key.to_s.split(".")
-      result = keys.inject(all_settings) do |settings, key|
-        break nil if settings.nil?
-        settings.is_a?(OpenStruct) ? settings[key.to_sym] : settings[key.to_sym]
-      end
-      result.nil? ? guaranteed_setting_service.get(key) : result
+      Rails.logger.debug "Getting setting for key: #{key}"
+      result = guaranteed_setting_service.get(key)
+      Rails.logger.debug "Final result: #{result.inspect}"
+      result
     end
 
     def invalidate_settings_cache
       self.class.cache_store.delete("account_settings_#{current_account.id}")
-      ::SettingsService.clear_cache_for_account(current_account) if defined?(::SettingsService)
       @all_settings = nil
+      @guaranteed_setting_service = nil
     end
 
     private
 
     def fetch_settings
-      cached_settings = self.class.cache_store.fetch("account_settings_#{current_account.id}", expires_in: 1.hour) do
-        settings_service = BravuraTemplateBase::GuaranteedSettingService.for_account(current_account)
+      self.class.cache_store.fetch("account_settings_#{current_account.id}", expires_in: 1.hour) do
+        service = guaranteed_setting_service
         {
-          feature: settings_service.get(:feature),
-          general: settings_service.get(:general),
-          cta_button_setup: settings_service.get(:cta_button_setup),
-          design: settings_service.get(:design),
-          email_newsletter_setup: settings_service.get(:email_newsletter_setup),
-          footer: settings_service.get(:footer),
-          navigation: settings_service.get(:navigation)
+          feature: service.get(:feature),
+          general: service.get(:general),
+          cta_button_setup: service.get(:cta_button_setup),
+          design: service.get(:design),
+          email_newsletter_setup: service.get(:email_newsletter_setup),
+          footer: service.get(:footer),
+          navigation: service.get(:navigation)
         }
       end
-      cached_settings.transform_values { |v| v.is_a?(Hash) ? OpenStruct.new(v) : v }
     end
 
     def guaranteed_setting_service
-      @guaranteed_setting_service ||= BravuraTemplateBase::GuaranteedSettingService.new(nil, BravuraTemplateBase::DefaultSettingsRepository.new)
+      @guaranteed_setting_service ||= BravuraTemplateBase::GuaranteedSettingService.for_account(current_account)
     end
   end
 end

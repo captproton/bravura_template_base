@@ -41,23 +41,20 @@ module BravuraTemplateBase
 
       before do
         mock_settings.each do |key, value|
-          allow(guaranteed_settings).to receive(:get).with(key).and_return(OpenStruct.new(value))
+          allow(guaranteed_settings).to receive(:get).with(key).and_return(value)
         end
       end
 
-      it 'fetches settings as an OpenStruct' do
-        settings = instance.all_settings
-        expect(settings[:feature]).to be_an(OpenStruct)
+      it 'fetches settings as a Hash' do
+        expect(instance.all_settings[:feature]).to be_a(Hash)
       end
 
-      it 'has watermark set to true in settings' do
-        settings = instance.all_settings
-        expect(settings[:feature].watermark).to eq(true)
+      it 'includes watermark setting' do
+        expect(instance.all_settings[:feature][:watermark]).to eq(true)
       end
 
-      it 'returns the correct setting value' do
-        settings = instance.all_settings
-        expect(settings[:general].site_name).to eq('Test Blog')
+      it 'includes site_name setting' do
+        expect(instance.all_settings[:general][:site_name]).to eq('Test Blog')
       end
 
       it 'caches settings' do
@@ -67,66 +64,42 @@ module BravuraTemplateBase
     end
 
     describe '#get_setting' do
-      let(:mock_settings) do
-        {
-          feature: OpenStruct.new(page_size: 10, comments: false),
-          general: OpenStruct.new(blog_title: 'My Blog')
-        }
-      end
-
-      before do
-        allow(instance).to receive(:all_settings).and_return(mock_settings)
-      end
-
-      it 'retrieves existing settings for feature.page_size' do
+      it 'retrieves page_size setting' do
+        expect(guaranteed_settings).to receive(:get).with('feature.page_size').and_return(10)
         expect(instance.get_setting('feature.page_size')).to eq(10)
       end
 
-      it 'retrieves existing settings for general.blog_title' do
+      it 'retrieves blog_title setting' do
+        expect(guaranteed_settings).to receive(:get).with('general.blog_title').and_return('My Blog')
         expect(instance.get_setting('general.blog_title')).to eq('My Blog')
       end
 
-      it 'returns default value for non-existent settings feature.comments' do
-        expect(instance.get_setting('feature.comments')).to eq(false)
-      end
-
-      it 'returns default value for completely non-existent settings' do
-        default_value = "default_value"
-        guaranteed_setting_service = instance_double("BravuraTemplateBase::GuaranteedSettingService")
-        allow(BravuraTemplateBase::GuaranteedSettingService).to receive(:new).and_return(guaranteed_setting_service)
-        allow(guaranteed_setting_service).to receive(:get).with('non_existent.setting').and_return(default_value)
-
-        expect(instance.get_setting('non_existent.setting')).to eq(default_value)
+      it 'returns default value for non-existent settings' do
+        expect(guaranteed_settings).to receive(:get).with('non_existent.setting').and_return('N/A')
+        expect(instance.get_setting('non_existent.setting')).to eq('N/A')
       end
     end
 
     describe '#invalidate_settings_cache' do
-    let(:settings_service_class) do
-      Class.new do
-        def self.clear_cache_for_account(account)
-        end
+      before do
+        instance.instance_variable_set(:@all_settings, {})
+        instance.instance_variable_set(:@guaranteed_setting_service, guaranteed_settings)
+      end
+
+      it 'clears the cache' do
+        expect(mock_cache).to receive(:delete).with("account_settings_1")
+        instance.invalidate_settings_cache
+      end
+
+      it 'resets all_settings to nil' do
+        instance.invalidate_settings_cache
+        expect(instance.instance_variable_get(:@all_settings)).to be_nil
+      end
+
+      it 'resets guaranteed_setting_service to nil' do
+        instance.invalidate_settings_cache
+        expect(instance.instance_variable_get(:@guaranteed_setting_service)).to be_nil
       end
     end
-
-    before do
-      instance.instance_variable_set(:@all_settings, {})
-      stub_const("::SettingsService", settings_service_class)
-    end
-
-    it 'clears the cache' do
-      expect(mock_cache).to receive(:delete).with("account_settings_1")
-      instance.invalidate_settings_cache
-    end
-
-    it 'calls clear_cache_for_account on SettingsService' do
-      expect(::SettingsService).to receive(:clear_cache_for_account).with(current_account)
-      instance.invalidate_settings_cache
-    end
-
-    it 'resets all_settings to nil' do
-      instance.invalidate_settings_cache
-      expect(instance.instance_variable_get(:@all_settings)).to be_nil
-    end
-  end
   end
 end
