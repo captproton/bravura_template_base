@@ -98,7 +98,8 @@ module BravuraTemplateBase
         font_family: "Arial, sans-serif",
         blog_template_gem: "bravura_template_prime",
         heading_font: "DEFAULT",
-        content_font: "DEFAULT"
+        content_font: "DEFAULT",
+        template: "prime"
       },
       email_newsletter_setup: {
         header_enabled: false,
