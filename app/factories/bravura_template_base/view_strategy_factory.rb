@@ -4,7 +4,7 @@ module BravuraTemplateBase
 
     class << self
       def create_for(settings:, template_name:, **options)
-        new(settings:, template_name:, **options).create
+        new(settings: settings, template_name: template_name, **options).create
       end
     end
 
