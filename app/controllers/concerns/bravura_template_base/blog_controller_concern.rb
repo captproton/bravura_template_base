@@ -37,8 +37,12 @@ module BravuraTemplateBase
     end
 
     def set_view_strategy
-      settings = GuaranteedSettingService.for_account(ActsAsTenant.current_tenant)
-      @view_strategy = ViewStrategyFactory.create(settings: settings)
+      current_settings = GuaranteedSettingService.for_account(ActsAsTenant.current_tenant)
+      @view_strategy = BravuraTemplateBase::ViewStrategyFactory
+        .create_for(
+          settings: current_settings,
+          template_name: current_settings.get("design.template")
+        )
     end
 
     def load_settings_and_presenter
