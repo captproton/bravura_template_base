@@ -25,4 +25,4 @@ jobs:
         run: bundle install
 
       - name: Lint code for consistent style
-        run: bin/rubocop -f github
+        run: bin/rubocop -f github --display-cop-names --display-style-guide
