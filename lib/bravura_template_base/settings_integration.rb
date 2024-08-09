@@ -1,9 +1,6 @@
-# bravura_template_base/lib/bravura_template_base/settings_integration.rb
 # lib/bravura_template_base/settings_integration.rb
 require "active_support/concern"
-require "bravura_template_base/null_settings"
 require "bravura_template_base/guaranteed_setting_service"
-require "ostruct"
 
 module BravuraTemplateBase
   module SettingsIntegration
@@ -20,37 +17,37 @@ module BravuraTemplateBase
     end
 
     def get_setting(key)
-      keys = key.to_s.split(".")
-      result = keys.inject(all_settings) do |settings, key|
-        value = settings.respond_to?(:[]) ? settings[key.to_sym] : settings.send(key.to_sym)
-        break GuaranteedSettingService::DefaultSetting.new(keys.first.to_sym) if value.nil?
-        value
-      end
-      result.is_a?(GuaranteedSettingService::DefaultSetting) ? result.send(keys.last) : result
+      Rails.logger.debug "Getting setting for key: #{key}"
+      result = guaranteed_setting_service.get(key)
+      Rails.logger.debug "Final result: #{result.inspect}"
+      result
     end
 
     def invalidate_settings_cache
       self.class.cache_store.delete("account_settings_#{current_account.id}")
-      SettingsService.clear_cache_for_account(current_account)
       @all_settings = nil
+      @guaranteed_setting_service = nil
     end
 
     private
 
     def fetch_settings
-      cached_settings = self.class.cache_store.fetch("account_settings_#{current_account.id}", expires_in: 1.hour) do
-        guaranteed_settings = BravuraTemplateBase::GuaranteedSettingService.for_account(current_account)
+      self.class.cache_store.fetch("account_settings_#{current_account.id}", expires_in: 1.hour) do
+        service = guaranteed_setting_service
         {
-          feature: OpenStruct.new(guaranteed_settings.get(:feature)),
-          general: OpenStruct.new(guaranteed_settings.get(:general)),
-          cta_button_setup: OpenStruct.new(guaranteed_settings.get(:cta_button_setup)),
-          design: OpenStruct.new(guaranteed_settings.get(:design)),
-          email_newsletter_setup: OpenStruct.new(guaranteed_settings.get(:email_newsletter_setup)),
-          footer: OpenStruct.new(guaranteed_settings.get(:footer)),
-          navigation: OpenStruct.new(guaranteed_settings.get(:navigation))
+          feature: service.get(:feature),
+          general: service.get(:general),
+          cta_button_setup: service.get(:cta_button_setup),
+          design: service.get(:design),
+          email_newsletter_setup: service.get(:email_newsletter_setup),
+          footer: service.get(:footer),
+          navigation: service.get(:navigation)
         }
       end
-      OpenStruct.new(cached_settings)
+    end
+
+    def guaranteed_setting_service
+      @guaranteed_setting_service ||= BravuraTemplateBase::GuaranteedSettingService.for_account(current_account)
     end
   end
 end

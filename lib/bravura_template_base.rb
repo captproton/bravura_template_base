@@ -1,10 +1,9 @@
-# lib/bravura_template_base.rb
 require "bravura_template_base/version"
 require "bravura_template_base/engine"
 require "bravura_template_base/null_settings"
 require "bravura_template_base/settings_integration"
-require "bravura_template_base/template_renderer"
 require "bravura_template_base/guaranteed_setting_service"
+
 module BravuraTemplateBase
   class Error < StandardError; end
 
@@ -12,6 +11,37 @@ module BravuraTemplateBase
   self.available_templates = [ "bravura_template_prime" ]
 
   DEFAULT_TEMPLATE = "bravura_template_prime"
+
+  mattr_accessor :set_locale_module
+
+  module TemplateRenderer
+    extend ActiveSupport::Concern
+    include BravuraTemplateBase::SettingsIntegration
+
+    included do
+      include BravuraTemplateBase.set_locale_module if BravuraTemplateBase.set_locale_module
+      layout :determine_layout
+      before_action :prepend_template_view_path
+    end
+
+    def render_in_template(template = action_name)
+      template_name = get_setting("design.blog_template_gem") || DEFAULT_TEMPLATE
+      render template: "#{template_name}/blog/#{template}"
+    end
+
+    private
+
+    def determine_layout
+      template_name = get_setting("design.blog_template_gem") || DEFAULT_TEMPLATE
+      "layouts/#{template_name}/application"
+    end
+
+    def prepend_template_view_path
+      template_name = get_setting("design.blog_template_gem") || DEFAULT_TEMPLATE
+      path = BravuraTemplateBase.template_view_path(template_name)
+      prepend_view_path(path) if path
+    end
+  end
 
   class << self
     def register_template(template_name)
@@ -27,13 +57,20 @@ module BravuraTemplateBase
     def load_template(app, account = nil)
       account ||= create_default_account
       validate_account(account)
-
       template_name = account.settings_design.blog_template_gem || DEFAULT_TEMPLATE
       load_template_engine(app, template_name, account)
     end
 
     def logger
       Rails.logger || Logger.new(STDOUT)
+    end
+
+    def template_view_path(template_name)
+      engine_class = "#{template_name.camelize}::Engine".constantize
+      engine_class.root.join("app", "views")
+    rescue NameError
+      logger.warn "Template engine for #{template_name} not found"
+      nil
     end
 
     private
