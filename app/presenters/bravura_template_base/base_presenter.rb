@@ -5,26 +5,10 @@ module BravuraTemplateBase
       @settings = settings
     end
 
-    def site_name
-      @settings.get("site_name")
+    def get(key)
+      @settings.get(key)
     end
 
-    def page_title
-      site_name
-    end
-
-    def main_content_class
-      "base-main-content"
-    end
-
-    def header_title
-      site_name
-    end
-
-    def footer_text
-      "© #{Time.current.year} #{site_name}"
-    end
-
-    # Add more common presenter methods as needed
+    # Other methods...
   end
 end
