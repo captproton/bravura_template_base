@@ -4,7 +4,7 @@ source "https://rubygems.org"
 gemspec
 
 gem "puma"
-gem "sqlite3", "~> 1.4"
+gem "sqlite3", "~> 2.0"
 gem "sprockets-rails"
 
 # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
