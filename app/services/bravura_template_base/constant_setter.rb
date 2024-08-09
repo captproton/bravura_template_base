@@ -1,5 +1,5 @@
-# app/services/bravura_template_prime/constant_setter.rb
-module BravuraTemplatePrime
+# app/services/bravura_template_base/constant_setter.rb
+module BravuraTemplateBase
   class ConstantSetter
     def initialize(presenter, view_context)
       @presenter = presenter
