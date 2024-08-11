@@ -1,0 +1,15 @@
+/* In engines/bravura_template_base/app/assets/stylesheets/bravura_template_base/base.css */
+:root {
+    --primary-50: 236, 253, 245;
+    /* ... other default color definitions */
+  }
+  
+  .theme-candy {
+    --primary-50: 255, 240, 245;
+    /* ... other color definitions for this theme */
+  }
+  
+  .theme-chocolate {
+    --primary-50: 240, 220, 200;
+    /* ... other color definitions for this theme */
+  }

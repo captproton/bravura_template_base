@@ -48,5 +48,9 @@ module BravuraTemplateBase
         include BravuraTemplateBase::SettingsIntegration
       end
     end
+
+    initializer "bravura_template_base.assets.precompile" do |app|
+      app.config.assets.precompile += %w( bravura_template_base/application.css )
+    end
   end
 end
