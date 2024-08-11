@@ -13,8 +13,8 @@ module BravuraTemplateBase
     # Uncomment and adjust these actions as needed
     def index
       # Common index logic here
-      # @posts = Post.published.order(published_at: :desc).page(params[:page])
-      # @featured_posts = Post.featured.limit(3)
+      @posts = Post.published.order(published_at: :desc)#.page(params[:page])
+      @featured_posts = @posts.featured.limit(3)
       # @tags = Tag.all
       render_with_strategy :index
     end
