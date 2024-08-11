@@ -4,7 +4,6 @@ module BravuraTemplateBase
     extend ActiveSupport::Concern
 
     included do
-      before_action :ensure_current_account
       before_action :load_settings_and_presenter
       before_action :set_view_strategy
       # before_action :set_publication_constants
@@ -19,22 +18,18 @@ module BravuraTemplateBase
       render_with_strategy :index
     end
 
-    # def show
-    #   @post = Post.published.find(params[:id])
-    #   @related_posts = @post.related_posts.limit(3)
-    #   render_with_strategy :show
-    # rescue ActiveRecord::RecordNotFound
-    #   render_not_found
-    # end
+    def show
+      # should find with friendly id
+      @post = Post.published.friendly.find(params[:id])
+      @related_posts = @post.related_posts.limit(3)
+      render_with_strategy :show
+    rescue ActiveRecord::RecordNotFound
+      render_not_found
+    end
 
     private
 
-    def ensure_current_account
-      unless Current.account
-        flash[:alert] = "No account found for this domain or subdomain."
-        redirect_to root_path
-      end
-    end
+
 
     def featured
       @featured_posts = Post.featured
