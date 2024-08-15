@@ -13,7 +13,7 @@ module BravuraTemplateBase
     def index
       # Common index logic here
       @posts = Post.published.order(published_at: :desc)#.page(params[:page])
-      @featured_posts = @posts.featured.limit(3)
+      @featured_articles = @posts.featured.first(3)
       # @tags = Tag.all
       render_with_strategy :index
     end
@@ -21,7 +21,7 @@ module BravuraTemplateBase
     def show
       # should find with friendly id
       @post = Post.published.friendly.find(params[:id])
-      @related_posts = @post.related_posts.limit(3)
+      @related_posts = @post.related_posts.first(3)
       render_with_strategy :show
     rescue ActiveRecord::RecordNotFound
       render_not_found
