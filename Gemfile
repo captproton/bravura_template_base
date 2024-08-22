@@ -17,7 +17,11 @@ group :development, :test do
   gem "rspec-rails", "~> 6.1", ">= 6.1.3"
   gem "factory_bot_rails", "~> 6.4", ">= 6.4.3"
   gem "faker", " ~> 3.4", ">= 3.4.1"
+  gem "shoulda-matchers", "~> 6.4"
+
   gem "pry-byebug"
+  gem "rails-controller-testing", "~> 1.0"
+
 
   gem "rubocop", require: false
   gem "rubocop-rspec", require: false
@@ -48,3 +52,5 @@ gem "jbuilder"
 
 # Uncomment the following line if you want to use webpacker
 # gem 'webpacker', '~> 5.0'
+
+
