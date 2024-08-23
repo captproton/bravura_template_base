@@ -11,6 +11,8 @@ module BravuraTemplateBase
     def index
       @posts = Post.recently_published
       @featured_posts = Post.featured
+      # FIXME: featured_posts should be renamed to featured_articles in the spec and in the controller concern
+      @featured_articles = Post.featured
       render_with_strategy :index
     end
 
