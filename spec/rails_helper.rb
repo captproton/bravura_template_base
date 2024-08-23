@@ -21,6 +21,8 @@ require 'bravura_template_base'
 
 # Load stub classes
 require_relative 'support/stub_classes'
+require 'support/stubs/bravura_template_prime/view_strategy'
+require 'support/stubs/bravura_template_base/view_strategy_factory'
 
 # Require support files
 Dir[File.join(File.dirname(__FILE__), 'support', '**', '*.rb')].sort.each { |f| require f }

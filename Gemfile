@@ -52,5 +52,3 @@ gem "jbuilder"
 
 # Uncomment the following line if you want to use webpacker
 # gem 'webpacker', '~> 5.0'
-
-
