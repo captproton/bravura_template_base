@@ -9,13 +9,12 @@ module BravuraTemplateBase
     end
 
     def index
-      @featured_posts = @posts.featured
+      @featured_posts = Post.featured
       # FIXME: featured_posts should be renamed to featured_articles in the spec and in the controller concern
       render_with_strategy :index
     end
 
     def show
-      @related_posts = @post.related_posts
       render_with_strategy :show
     rescue ActiveRecord::RecordNotFound
       render_not_found
