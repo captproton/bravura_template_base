@@ -9,15 +9,12 @@ module BravuraTemplateBase
     end
 
     def index
-      @posts = Post.recently_published
-      @featured_posts = Post.featured
+      @featured_posts = @posts.featured
       # FIXME: featured_posts should be renamed to featured_articles in the spec and in the controller concern
-      @featured_articles = Post.featured
       render_with_strategy :index
     end
 
     def show
-      @post = Post.published.find(params[:id])
       @related_posts = @post.related_posts
       render_with_strategy :show
     rescue ActiveRecord::RecordNotFound
@@ -39,8 +36,17 @@ module BravuraTemplateBase
       @presenter = BravuraTemplateBase::PresenterFactory.create(@settings)
     end
 
+    # def render_with_strategy(action)
+    #   render template: @view_strategy.template_for(action), layout: @view_strategy.layout
+    # end
     def render_with_strategy(action)
-      render template: @view_strategy.template_for(action), layout: @view_strategy.layout
+      template = @view_strategy.template_for(action)
+      layout = @view_strategy.layout
+      Rails.logger.debug "Rendering template: #{template}, layout: #{layout}"
+      render template: template, layout: layout
+    rescue => e
+      Rails.logger.error "Error in render_with_strategy: #{e.message}"
+      raise
     end
 
     def render_not_found
