@@ -124,7 +124,7 @@ module BravuraTemplateBase
         when :sitemap, :rss_feed
           true
         when :copyright
-          "Copyright © #{Time.current.year} Default Company Name"
+          "Copyright © #{Time.now.year} Default Company Name"
         when :created_at, :updated_at
           Time.current
         when :account_id

@@ -123,7 +123,7 @@ module BravuraTemplateBase
       end
 
       it 'uses the current year in the copyright default for footer settings' do
-        expect(repository.get('footer.copyright')).to include(Time.current.year.to_s)
+        expect(repository.get('footer.copyright')).to include(Time.now.year.to_s)
       end
     end
   end

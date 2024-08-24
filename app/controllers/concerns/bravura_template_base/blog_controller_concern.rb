@@ -6,22 +6,15 @@ module BravuraTemplateBase
     included do
       before_action :load_settings_and_presenter
       before_action :set_view_strategy
-      # before_action :set_publication_constants
     end
 
-    # Uncomment and adjust these actions as needed
     def index
-      # Common index logic here
-      @posts = Post.published.order(published_at: :desc)#.page(params[:page])
-      @featured_articles = @posts.featured.first(3)
-      # @tags = Tag.all
+      @featured_posts = Post.featured
+      # FIXME: featured_posts should be renamed to featured_articles in the spec and in the controller concern
       render_with_strategy :index
     end
 
     def show
-      # should find with friendly id
-      @post = Post.published.friendly.find(params[:id])
-      @related_posts = @post.related_posts.first(3)
       render_with_strategy :show
     rescue ActiveRecord::RecordNotFound
       render_not_found
@@ -29,37 +22,30 @@ module BravuraTemplateBase
 
     private
 
-
-
-    def featured
-      @featured_posts = Post.featured
-    end
-
-    def archives
-      @archived_posts = Post.archived.page(params[:page])
-    end
-
     def set_view_strategy
-      current_settings = GuaranteedSettingService.for_account(Current.account)
-      @view_strategy = BravuraTemplateBase::ViewStrategyFactory
-        .create_for(
-          settings: current_settings,
-          template_name: current_settings.get("design.template")
-        )
+      current_settings = GuaranteedSettingService.for_account(current_account)
+      @view_strategy = BravuraTemplateBase::ViewStrategyFactory.create_for(
+        settings: current_settings,
+        template_name: current_settings.get("design.template")
+      )
     end
 
     def load_settings_and_presenter
-      @settings ||= GuaranteedSettingService.for_account(Current.account)
-      @presenter = PresenterFactory.create(@settings)
+      @settings ||= GuaranteedSettingService.for_account(current_account)
+      @presenter = BravuraTemplateBase::PresenterFactory.create(@settings)
     end
 
-    def set_publication_constants
-      constant_setter_class = PresenterFactory.constant_setter_for(@settings)
-      constant_setter_class.new(@presenter, view_context).set_all
-    end
-
+    # def render_with_strategy(action)
+    #   render template: @view_strategy.template_for(action), layout: @view_strategy.layout
+    # end
     def render_with_strategy(action)
-      render template: @view_strategy.template_for(action), layout: @view_strategy.layout
+      template = @view_strategy.template_for(action)
+      layout = @view_strategy.layout
+      Rails.logger.debug "Rendering template: #{template}, layout: #{layout}"
+      render template: template, layout: layout
+    rescue => e
+      Rails.logger.error "Error in render_with_strategy: #{e.message}"
+      raise
     end
 
     def render_not_found

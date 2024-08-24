@@ -115,7 +115,7 @@ module BravuraTemplateBase
         footer_description: "Default footer description",
         sitemap: true,
         rss_feed: true,
-        copyright: "© #{Time.current.year} Your Company Name"
+        copyright: "© #{Time.now.year} Your Company Name"
       },
       navigation: {
         logo_text: "Your Logo",
