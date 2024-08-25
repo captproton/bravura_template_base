@@ -1,6 +1,6 @@
-# app/controllers/concerns/bravura_template_base/blog_controller_concern.rb
+# app/controllers/concerns/bravura_template_base/base_controller_concern.rb
 module BravuraTemplateBase
-  module BlogControllerConcern
+  module BaseControllerConcern
     extend ActiveSupport::Concern
 
     included do
@@ -9,37 +9,19 @@ module BravuraTemplateBase
       before_action :set_current_account
     end
 
-    def index
-      load_index_data
-      render_with_strategy :index
-    end
-
-    def show
-      load_show_data
-      render_with_strategy :show
-    rescue ActiveRecord::RecordNotFound
-      render_not_found
-    end
-
     private
-
-    def load_index_data
-      # Override this method in the main controller to add more data
-    end
-
-    def load_show_data
-      # Override this method in the main controller to load the post and related data
-    end
 
     def set_current_account
       current_account = Current.account
       @current_account = current_account
     end
+
     def set_view_strategy
       current_settings = GuaranteedSettingService.for_account(current_account)
       @view_strategy = BravuraTemplateBase::ViewStrategyFactory.create_for(
         settings: current_settings,
-        template_name: current_settings.get("design.template")
+        template_name: current_settings.get("design.template"),
+        controller_name: controller_name
       )
     end
 
@@ -60,6 +42,10 @@ module BravuraTemplateBase
 
     def render_not_found
       render template: "shared/not_found", status: :not_found
+    end
+
+    def render_error
+      render template: "shared/error", status: :internal_server_error
     end
   end
 end
