@@ -6,15 +6,16 @@ module BravuraTemplateBase
     included do
       before_action :load_settings_and_presenter
       before_action :set_view_strategy
+      before_action :set_current_account
     end
 
     def index
-      @featured_posts = Post.featured
-      # FIXME: featured_posts should be renamed to featured_articles in the spec and in the controller concern
+      load_index_data
       render_with_strategy :index
     end
 
     def show
+      load_show_data
       render_with_strategy :show
     rescue ActiveRecord::RecordNotFound
       render_not_found
@@ -22,6 +23,18 @@ module BravuraTemplateBase
 
     private
 
+    def load_index_data
+      # Override this method in the main controller to add more data
+    end
+
+    def load_show_data
+      # Override this method in the main controller to load the post and related data
+    end
+
+    def set_current_account
+      current_account = @posts.first&.account || @post&.account
+      @current_account = current_account
+    end
     def set_view_strategy
       current_settings = GuaranteedSettingService.for_account(current_account)
       @view_strategy = BravuraTemplateBase::ViewStrategyFactory.create_for(
@@ -35,9 +48,6 @@ module BravuraTemplateBase
       @presenter = BravuraTemplateBase::PresenterFactory.create(@settings)
     end
 
-    # def render_with_strategy(action)
-    #   render template: @view_strategy.template_for(action), layout: @view_strategy.layout
-    # end
     def render_with_strategy(action)
       template = @view_strategy.template_for(action)
       layout = @view_strategy.layout
