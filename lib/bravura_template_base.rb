@@ -1,4 +1,5 @@
 require "rails"
+require "pagy"
 require "bravura_template_base/version"
 require "bravura_template_base/engine"
 require "bravura_template_base/null_settings"

@@ -1,7 +1,10 @@
 # app/controllers/concerns/bravura_template_base/base_controller_concern.rb
+require "pagy"
+
 module BravuraTemplateBase
   module BaseControllerConcern
     extend ActiveSupport::Concern
+    include Pagy::Backend
 
     included do
       before_action :load_settings_and_presenter
