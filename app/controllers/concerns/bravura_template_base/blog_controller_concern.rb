@@ -32,7 +32,7 @@ module BravuraTemplateBase
     end
 
     def set_current_account
-      current_account = @posts.first&.account || @post&.account
+      current_account = Current.account
       @current_account = current_account
     end
     def set_view_strategy
