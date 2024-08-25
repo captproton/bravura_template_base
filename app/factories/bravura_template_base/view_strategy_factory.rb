@@ -1,22 +1,24 @@
+# app/factories/bravura_template_base/view_strategy_factory.rb
 module BravuraTemplateBase
   class ViewStrategyFactory
     class UnknownTemplateError < StandardError; end
 
     class << self
-      def create_for(settings:, template_name:, **options)
-        new(settings: settings, template_name: template_name, **options).create
+      def create_for(settings:, template_name:, controller_name:, **options)
+        new(settings: settings, template_name: template_name, controller_name: controller_name, **options).create
       end
     end
 
-    def initialize(settings:, template_name:, **options)
+    def initialize(settings:, template_name:, controller_name:, **options)
       @settings = settings
       @template_name = template_name.to_sym
+      @controller_name = controller_name
       @options = options
     end
 
     def create
       strategy_class = strategy_class_for(@template_name)
-      strategy_class.new(settings: @settings, **@options)
+      strategy_class.new(settings: @settings, controller_name: @controller_name, **@options)
     end
 
     private
