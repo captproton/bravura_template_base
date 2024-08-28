@@ -102,11 +102,11 @@ module BravuraTemplateBase
         template: "prime"
       },
       email_newsletter_setup: {
-        header_enabled: false,
+        # header_enabled: false, # This is a special case, it is not used in the same way as the other settings
         header_headline: "Subscribe to our newsletter",
         header_text: "Stay updated with our latest posts",
         header_disclaimer: "We respect your privacy",
-        footer_enabled: true,
+        # footer_enabled: true, # This is a special case, it is not used in the same way as the other settings
         footer_headline: "Join our mailing list",
         footer_text: "Get the latest news delivered to your inbox",
         footer_disclaimer: "Unsubscribe at any time"
