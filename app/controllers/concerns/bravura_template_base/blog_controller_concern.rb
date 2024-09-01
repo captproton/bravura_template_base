@@ -7,6 +7,7 @@ module BravuraTemplateBase
 
     def index
       load_posts_data
+      @query = params[:query] # Add this line to make @query available in the view
       render_with_strategy :index
     end
 
