@@ -3,11 +3,12 @@ module BravuraTemplateBase
   module BlogControllerConcern
     extend ActiveSupport::Concern
     include BravuraTemplateBase::BaseControllerConcern
-    include Pagy::Backend  # Add this line to include Pagy
+    include Pagy::Backend
 
     def index
       load_posts_data
-      @query = params[:query] # Add this line to make @query available in the view
+      @query = params[:query]
+      @tag = params[:tag]
       render_with_strategy :index
     end
 
@@ -27,6 +28,9 @@ module BravuraTemplateBase
 
     def tag
       load_tag_data
+      if @posts.empty?
+        flash.now[:notice] = "No posts found with tag '#{params[:tag]}'"
+      end
       render_with_strategy :tag
     rescue ActiveRecord::RecordNotFound
       render_not_found
