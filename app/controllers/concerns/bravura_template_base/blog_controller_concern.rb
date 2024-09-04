@@ -1,4 +1,5 @@
 # app/controllers/concerns/bravura_template_base/blog_controller_concern.rb
+
 module BravuraTemplateBase
   module BlogControllerConcern
     extend ActiveSupport::Concern

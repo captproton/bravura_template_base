@@ -26,6 +26,7 @@ require 'support/stubs/bravura_template_base/view_strategy_factory'
 
 # Require support files
 Dir[File.join(File.dirname(__FILE__), 'support', '**', '*.rb')].sort.each { |f| require f }
+Dir[Rails.root.join('spec/support/mocks/**/*.rb')].each { |f| require f }
 
 RSpec.configure do |config|
   # We're not using a database, so you might want to keep this false

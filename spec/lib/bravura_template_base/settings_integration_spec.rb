@@ -1,5 +1,7 @@
 require 'rails_helper'
 require 'bravura_template_base/guaranteed_setting_service'
+require 'bravura_template_base/default_settings_repository'
+
 
 module BravuraTemplateBase
   RSpec.describe SettingsIntegration do
