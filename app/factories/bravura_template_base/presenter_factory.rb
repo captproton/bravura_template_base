@@ -3,9 +3,7 @@
 module BravuraTemplateBase
   class PresenterFactory
     def self.create(settings)
-      # template_name = settings.get("design.template")
-      # FIXME: template name is static
-      template_name = "prime"
+      template_name = settings.get("design.template")
       presenter_class = presenter_class_for(template_name)
       presenter_class.new(settings)
     end
@@ -32,6 +30,16 @@ module BravuraTemplateBase
       else
         BasePresenter
       end
+    end
+  end
+
+  class BasePresenter
+    def initialize(settings)
+      @settings = settings
+    end
+
+    def get(key)
+      @settings.get(key)
     end
   end
 end
