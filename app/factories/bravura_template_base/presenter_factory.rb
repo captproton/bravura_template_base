@@ -8,38 +8,20 @@ module BravuraTemplateBase
       presenter_class.new(settings)
     end
 
-    def self.constant_setter_for(template_name)
-      case template_name.to_sym
-      when :prime
-        BravuraTemplatePrime::ConstantSetter
-      when :next
-        BravuraTemplateNext::ConstantSetter
-      else
-        BravuraTemplateBase::ConstantSetter
-      end
-    end
-
     private
 
     def self.presenter_class_for(template_name)
       case template_name.to_sym
       when :prime
+        require_dependency "bravura_template_prime/presenter"
         BravuraTemplatePrime::Presenter
       when :next
+        require_dependency "bravura_template_next/presenter"
         BravuraTemplateNext::Presenter
       else
-        BasePresenter
+        require_dependency "bravura_template_base/base_presenter"
+        BravuraTemplateBase::BasePresenter
       end
-    end
-  end
-
-  class BasePresenter
-    def initialize(settings)
-      @settings = settings
-    end
-
-    def get(key)
-      @settings.get(key)
     end
   end
 end

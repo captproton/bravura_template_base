@@ -25,7 +25,7 @@ module BravuraTemplateBase
 
     describe '#default_image_path' do
       it 'returns the correct default image path for existing images' do
-        expect(repository.default_image_path('general', 'social_cover')).to eq('path/to/default/social_cover.jpg')
+        expect(repository.default_image_path('general', 'social_cover')).to eq('bravura_template_base/defaults/social_cover.jpg')
       end
 
       it 'returns nil for non-existent images' do

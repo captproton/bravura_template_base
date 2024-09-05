@@ -1,6 +1,7 @@
 # lib/bravura_template_base/guaranteed_setting_service.rb
 
 require_relative "setting_retriever"
+require_relative "default_settings_repository"
 
 module BravuraTemplateBase
   class GuaranteedSettingService

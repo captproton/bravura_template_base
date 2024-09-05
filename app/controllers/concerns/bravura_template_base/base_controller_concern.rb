@@ -30,8 +30,11 @@ module BravuraTemplateBase
     end
 
     def load_settings_and_presenter
-      @settings ||= GuaranteedSettingService.for_account(current_account)
-      @presenter = BravuraTemplateBase::PresenterFactory.create(@settings)
+      Rails.logger.debug "### Current.account: #{Current.account.inspect}"
+      @settings ||= BravuraTemplateBase::GuaranteedSettingService.for_account(Current.account)
+      Rails.logger.debug "### @settings: #{@settings.inspect}"
+      @presenter ||= BravuraTemplateBase::PresenterFactory.create(@settings)
+      Rails.logger.debug "### @presenter: #{@presenter.inspect}"
     end
 
     def render_with_strategy(action)
