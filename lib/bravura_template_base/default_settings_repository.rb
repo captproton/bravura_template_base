@@ -83,7 +83,7 @@ module BravuraTemplateBase
       },
       images: {
         social_cover: "bravura_template_base/defaults/social_cover.jpg",
-        favicon: 'bravura_template_base/defaults/default_favicon.ico',
+        favicon: "bravura_template_base/defaults/default_favicon.ico"
       }
     }.freeze
 

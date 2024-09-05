@@ -23,11 +23,11 @@ module BravuraTemplateBase
       value.respond_to?(:url) ? value.url : value.to_s
     end
 
-    def responsive_image_attributes(key, sizes: nil, widths: [300, 600, 900, 1200])
+    def responsive_image_attributes(key, sizes: nil, widths: [ 300, 600, 900, 1200 ])
       value = get(key)
       if value.respond_to?(:variant)
         {
-          src: value.variant(resize_to_limit: [widths.max, nil]).processed.url,
+          src: value.variant(resize_to_limit: [ widths.max, nil ]).processed.url,
           srcset: generate_srcset(value, widths),
           sizes: sizes || "100vw"
         }
@@ -39,13 +39,13 @@ module BravuraTemplateBase
     private
 
     def default_image_path(key)
-      BravuraTemplateBase::DefaultSettingsRepository.new.default_image_path(*key.split('.'))
+      BravuraTemplateBase::DefaultSettingsRepository.new.default_image_path(*key.split("."))
     end
 
     def generate_srcset(attachment, widths)
       widths.map do |size|
-        "#{attachment.variant(resize_to_limit: [size, nil]).processed.url} #{size}w"
-      end.join(', ')
+        "#{attachment.variant(resize_to_limit: [ size, nil ]).processed.url} #{size}w"
+      end.join(", ")
     end
   end
 end

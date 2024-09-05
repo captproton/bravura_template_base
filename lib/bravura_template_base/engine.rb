@@ -4,8 +4,8 @@ module BravuraTemplateBase
     isolate_namespace BravuraTemplateBase
 
     config.autoload_paths << File.expand_path("../app/controllers", __FILE__)
-    config.autoload_paths << root.join('app', 'presenters')
-    config.autoload_paths << root.join('app', 'factories')
+    config.autoload_paths << root.join("app", "presenters")
+    config.autoload_paths << root.join("app", "factories")
 
     config.generators do |g|
       g.test_framework :rspec

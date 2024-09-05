@@ -13,13 +13,13 @@ module BravuraTemplateBase
     def self.presenter_class_for(template_name)
       case template_name.to_sym
       when :prime
-        require_dependency 'bravura_template_prime/presenter'
+        require_dependency "bravura_template_prime/presenter"
         BravuraTemplatePrime::Presenter
       when :next
-        require_dependency 'bravura_template_next/presenter'
+        require_dependency "bravura_template_next/presenter"
         BravuraTemplateNext::Presenter
       else
-        require_dependency 'bravura_template_base/base_presenter'
+        require_dependency "bravura_template_base/base_presenter"
         BravuraTemplateBase::BasePresenter
       end
     end

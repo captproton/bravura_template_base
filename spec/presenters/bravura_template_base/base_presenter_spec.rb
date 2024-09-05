@@ -70,7 +70,7 @@ RSpec.describe BravuraTemplateBase::BasePresenter do
       end
 
       it "allows custom widths and sizes" do
-        result = presenter.responsive_image_attributes("image.key", sizes: "(max-width: 600px) 100vw, 50vw", widths: [400, 800])
+        result = presenter.responsive_image_attributes("image.key", sizes: "(max-width: 600px) 100vw, 50vw", widths: [ 400, 800 ])
         expect(result[:srcset]).to include("400w", "800w")
         expect(result[:sizes]).to eq("(max-width: 600px) 100vw, 50vw")
       end
