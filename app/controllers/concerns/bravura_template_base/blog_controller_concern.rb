@@ -7,9 +7,9 @@ module BravuraTemplateBase
     include Pagy::Backend
 
     def index
-      load_posts_data
-      @query = params[:query]
-      @tag = params[:tag]
+      # load_posts_data
+      # @query = params[:query]
+      # @tag = params[:tag]
       render_with_strategy :index
     end
 

@@ -8,9 +8,9 @@ module BravuraTemplateBase
     include Pagy::Backend
 
     included do
-      before_action :load_settings_and_presenter
+      # before_action :load_settings_and_presenter
       before_action :set_view_strategy
-      before_action :set_current_account
+      # before_action :set_current_account
     end
 
     private
@@ -30,7 +30,7 @@ module BravuraTemplateBase
     end
 
     def load_settings_and_presenter
-      @settings ||= GuaranteedSettingService.for_account(current_account)
+      @settings ||= BravuraTemplateBase::GuaranteedSettingService.for_account(current_account)
       @presenter = BravuraTemplateBase::PresenterFactory.create(@settings)
     end
 

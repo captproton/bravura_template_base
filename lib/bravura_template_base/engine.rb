@@ -4,6 +4,8 @@ module BravuraTemplateBase
     isolate_namespace BravuraTemplateBase
 
     config.autoload_paths << File.expand_path("../app/controllers", __FILE__)
+    config.autoload_paths << root.join('app', 'presenters')
+    config.autoload_paths << root.join('app', 'factories')
 
     config.generators do |g|
       g.test_framework :rspec
@@ -30,9 +32,11 @@ module BravuraTemplateBase
             BravuraTemplateBase.logger.warn "Failed to load template assets: #{template_name}. Error: #{e.message}"
           end
         end
+
         app.config.assets.precompile += %w[
           bravura_template_base/application.js
           bravura_template_base/application.css
+          bravura_template_base/defaults/*
         ]
       else
         BravuraTemplateBase.logger.warn "Asset pipeline is not available in this environment."
@@ -48,13 +52,6 @@ module BravuraTemplateBase
     initializer "bravura_template_base.settings_integration" do |app|
       ActiveSupport.on_load(:action_controller) do
         include BravuraTemplateBase::SettingsIntegration
-      end
-    end
-
-    # Add this new initializer to ensure the engine's views are available
-    initializer "bravura_template_base.set_view_paths" do |app|
-      ActiveSupport.on_load(:action_controller) do
-        append_view_path File.expand_path("../../app/views", __FILE__)
       end
     end
   end
