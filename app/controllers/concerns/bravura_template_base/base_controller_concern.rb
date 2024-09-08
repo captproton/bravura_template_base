@@ -1,5 +1,4 @@
 # app/controllers/concerns/bravura_template_base/base_controller_concern.rb
-
 require "pagy"
 
 module BravuraTemplateBase
