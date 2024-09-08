@@ -4,10 +4,8 @@ module BravuraTemplateBase
   module BlogControllerConcern
     extend ActiveSupport::Concern
     include BravuraTemplateBase::BaseControllerConcern
-    include Pagy::Backend
 
     def index
-      set_current_account
       load_posts_data
       @query = params[:query]
       @tag = params[:tag]
